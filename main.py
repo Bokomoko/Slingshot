@@ -48,8 +48,6 @@ def main():
           else:
             adding_spacecraft = False
             if len(spacecrafts):
-              print(spacecrafts[-1])
-              print(velocity_vector)
               spacecrafts[-1][1] = (velocity_vector[0] - spacecrafts[-1][1][0],
                                     velocity_vector[1] - spacecrafts[-1][1][1])
 
