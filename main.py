@@ -54,6 +54,8 @@ def main():
   adding_spacecraft = False
   while True:
     clock.tick(FPS)
+    my_font = pygame.font.SysFont('Comic Sans MS', 30)
+    score_text = my_font.render('Ships: ' + str(len(spacecrafts)), True, WHITE)
     # remove ships out of bounds
     spacecrafts = [
         ship for ship in spacecrafts
@@ -86,6 +88,7 @@ def main():
     # clear the screen
     win.blit(BG, (0, 0))
     win.blit(PLANET, (WIDTH // 2 - PLANET_SIZE, HEIGHT // 2 - PLANET_SIZE))
+    win.blit(score_text, (10, 10))
     # will draw the updates after the background and before
     # the display.update()
 
