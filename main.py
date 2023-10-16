@@ -7,7 +7,7 @@ from pygame.locals import QUIT
 WIDTH, HEIGHT = 800, 600
 PLANET_MASS = 100
 SHIP_MASS = 5
-G = 50
+G = 5
 FPS = 60
 PLANET_SIZE = 50
 OBJ_SIZE = 5
@@ -28,7 +28,7 @@ def add_vector(v1, v2):
 
 
 def get_velocity(v1, v2):
-  return ((v1[0] - v2[0]) / VEL_SCALE, (v1[1] - v2[1]) / VEL_SCALE)
+  return ((v1[0] - v2[0])/VEL_SCALE, (v1[1] - v2[1])/VEL_SCALE)
 
 
 class Ship:
@@ -43,14 +43,14 @@ class Ship:
                          (self.position[1] - planet.position[1])**2)
     force = (G * self.mass * planet.mass) / (distance**2)
     acceleration = force / self.mass
-    angle = math.atan2((planet.position[1] - self.position[1]) ,
-                      (planet.position[0] - self.position[0]))
-    print(math.cos(angle)*acceleration,math.sin(angle)*acceleration)
-    pull_velocity = (int(math.cos(angle) * acceleration),
-                     int(math.sin(angle) * acceleration))
+    angle = math.atan2((planet.position[1] - self.position[1]),
+                       (planet.position[0] - self.position[0]))
+    pull_velocity = (math.cos(angle) * acceleration,
+                     math.sin(angle) * acceleration)
     self.velocity = add_vector(self.velocity, pull_velocity)
-
-    self.position = add_vector(self.position, self.velocity)
+    scaled_velocity = (self.velocity[0] ,
+                       self.velocity[1] )
+    self.position = add_vector(self.position, scaled_velocity)
 
   def draw_ship(self, screen):
     pygame.draw.circle(screen, RED, self.position, OBJ_SIZE)
@@ -78,7 +78,7 @@ def main():
   clock = pygame.time.Clock()
   win = pygame.display.set_mode((WIDTH, HEIGHT))
   pygame.display.set_caption('Space orbit simulation!')
-  # a list of positions and velocities
+  # a list of Ship obejcts
   spacecrafts = []
   adding_spacecraft = False
   jupiter = Planet((WIDTH // 2, HEIGHT // 2), PLANET_MASS)
