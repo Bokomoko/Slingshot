@@ -7,7 +7,7 @@ WIDTH, HEIGHT = 800, 600
 PLANET_MASS = 100
 SHIP_MASS = 5
 G = 5
-FPS = 60
+FPS = 5
 PLANET_SIZE = 50
 OBJ_SIZE = 5
 VEL_SCALE = 100
@@ -22,6 +22,28 @@ LEFT_MOUSE = 1
 RIGHT_MOUSE = 3
 
 
+def add_vector(v1, v2):
+  return (v1[0] + v2[0], v1[1] + v2[1])
+
+
+def subtract_vector(v1, v2):
+  return (v1[0] - v2[0], v1[1] - v2[1])
+
+
+class Ship:
+
+  def __init__(self, position, velocity, mass):
+    self.position = position
+    self.velocity = velocity
+    self.mass = mass
+
+  def move(self):
+    self.position = add_vector(self.position, self.velocity)
+
+  def draw_ship(self, screen):
+    pygame.draw.circle(screen, RED, self.position, OBJ_SIZE)
+
+
 def main():
   pygame.init()
   clock = pygame.time.Clock()
@@ -32,6 +54,12 @@ def main():
   adding_spacecraft = False
   while True:
     clock.tick(FPS)
+    # remove ships out of bounds
+    spacecrafts = [
+        ship for ship in spacecrafts
+        if ship.position[0] >= 0 and ship.position[0] <= WIDTH
+        and ship.position[1] >= 0 and ship.position[1] <= HEIGHT
+    ]
     mouse_pos = pygame.mouse.get_pos()
     velocity_vector = mouse_pos
     for event in pygame.event.get():
@@ -44,17 +72,18 @@ def main():
           if not adding_spacecraft:
             adding_spacecraft = True
             # add a spacecraft with velocity 0
-            spacecrafts.append([mouse_pos, (0, 0)])
+            spacecrafts.append(Ship(mouse_pos, (0, 0), SHIP_MASS))
           else:
             adding_spacecraft = False
             if len(spacecrafts):
-              spacecrafts[-1][1] = (velocity_vector[0] - spacecrafts[-1][1][0],
-                                    velocity_vector[1] - spacecrafts[-1][1][1])
+              spacecrafts[-1].velocity = subtract_vector(
+                  velocity_vector, spacecrafts[-1].position)
 
         if event.button == RIGHT_MOUSE:
           # remove the last spacecraft
           spacecrafts.pop()
 
+    # clear the screen
     win.blit(BG, (0, 0))
     win.blit(PLANET, (WIDTH // 2 - PLANET_SIZE, HEIGHT // 2 - PLANET_SIZE))
     # will draw the updates after the background and before
@@ -62,12 +91,15 @@ def main():
 
     # first, draw the existing spacecrafts
     for spacecraft in spacecrafts:
-      pygame.draw.circle(win, RED, spacecraft[0], OBJ_SIZE)
+      # apply movement
+      spacecraft.move()
+      spacecraft.draw_ship(win)
 
     # if adding a new spacecraft draw the velocity vector
     if adding_spacecraft:
       if len(spacecrafts):
-        pygame.draw.line(win, BLUE, spacecrafts[-1][0], velocity_vector, 2)
+        pygame.draw.line(win, BLUE, spacecrafts[-1].position, velocity_vector,
+                         2)
 
     pygame.display.update()
 
