@@ -1,12 +1,13 @@
 import sys
 
 import pygame
+import math
 from pygame.locals import QUIT
 
 WIDTH, HEIGHT = 800, 600
 PLANET_MASS = 100
 SHIP_MASS = 5
-G = 5
+G = 50
 FPS = 60
 PLANET_SIZE = 50
 OBJ_SIZE = 5
@@ -37,7 +38,18 @@ class Ship:
     self.velocity = velocity
     self.mass = mass
 
-  def move(self, planet=None):
+  def move(self, planet):
+    distance = math.sqrt((self.position[0] - planet.position[0])**2 +
+                         (self.position[1] - planet.position[1])**2)
+    force = (G * self.mass * planet.mass) / (distance**2)
+    acceleration = force / self.mass
+    angle = math.atan2((planet.position[1] - self.position[1]) ,
+                      (planet.position[0] - self.position[0]))
+    print(math.cos(angle)*acceleration,math.sin(angle)*acceleration)
+    pull_velocity = (int(math.cos(angle) * acceleration),
+                     int(math.sin(angle) * acceleration))
+    self.velocity = add_vector(self.velocity, pull_velocity)
+
     self.position = add_vector(self.position, self.velocity)
 
   def draw_ship(self, screen):
@@ -58,7 +70,7 @@ class Planet:
   def has_collided_with(self, ship):
     distance = ((self.position[0] - ship.position[0])**2 +
                 (self.position[1] - ship.position[1])**2)**0.5
-    return distance < PLANET
+    return distance < PLANET_SIZE + OBJ_SIZE
 
 
 def main():
@@ -118,7 +130,7 @@ def main():
     # first, draw the existing spacecrafts
     for spacecraft in spacecrafts:
       # apply movement
-      spacecraft.move()
+      spacecraft.move(jupiter)
       spacecraft.draw_ship(win)
 
     # if adding a new spacecraft draw the velocity vector
