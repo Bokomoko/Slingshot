@@ -25,6 +25,8 @@ def main():
   clock = pygame.time.Clock()
   win = pygame.display.set_mode((WIDTH, HEIGHT))
   pygame.display.set_caption('Space orbit simulation!')
+  spacecrafts = []
+  temp_spacecraft_pos = None
   while True:
     clock.tick(FPS)
     for event in pygame.event.get():
