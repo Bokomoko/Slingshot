@@ -7,7 +7,7 @@ WIDTH, HEIGHT = 800, 600
 PLANET_MASS = 100
 SHIP_MASS = 5
 G = 5
-FPS = 5
+FPS = 60
 PLANET_SIZE = 50
 OBJ_SIZE = 5
 VEL_SCALE = 100
@@ -26,8 +26,8 @@ def add_vector(v1, v2):
   return (v1[0] + v2[0], v1[1] + v2[1])
 
 
-def subtract_vector(v1, v2):
-  return (v1[0] - v2[0], v1[1] - v2[1])
+def get_velocity(v1, v2):
+  return ((v1[0] - v2[0]) / VEL_SCALE, (v1[1] - v2[1]) / VEL_SCALE)
 
 
 class Ship:
@@ -37,11 +37,23 @@ class Ship:
     self.velocity = velocity
     self.mass = mass
 
-  def move(self):
+  def move(self, planet=None):
     self.position = add_vector(self.position, self.velocity)
 
   def draw_ship(self, screen):
     pygame.draw.circle(screen, RED, self.position, OBJ_SIZE)
+
+
+class Planet:
+
+  def __init__(self, position, mass):
+    self.position = position
+    self.mass = mass
+
+  def draw(self, screen):
+    screen.blit(
+        PLANET,
+        (self.position[0] - PLANET_SIZE, self.position[1] - PLANET_SIZE))
 
 
 def main():
@@ -52,6 +64,7 @@ def main():
   # a list of positions and velocities
   spacecrafts = []
   adding_spacecraft = False
+  jupiter = Planet((WIDTH // 2, HEIGHT // 2), PLANET_MASS)
   while True:
     clock.tick(FPS)
     my_font = pygame.font.SysFont('Comic Sans MS', 30)
@@ -78,8 +91,8 @@ def main():
           else:
             adding_spacecraft = False
             if len(spacecrafts):
-              spacecrafts[-1].velocity = subtract_vector(
-                  velocity_vector, spacecrafts[-1].position)
+              spacecrafts[-1].velocity = get_velocity(velocity_vector,
+                                                      spacecrafts[-1].position)
 
         if event.button == RIGHT_MOUSE:
           # remove the last spacecraft
@@ -87,7 +100,7 @@ def main():
 
     # clear the screen
     win.blit(BG, (0, 0))
-    win.blit(PLANET, (WIDTH // 2 - PLANET_SIZE, HEIGHT // 2 - PLANET_SIZE))
+    jupiter.draw(win)
     win.blit(score_text, (10, 10))
     # will draw the updates after the background and before
     # the display.update()
