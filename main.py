@@ -55,6 +55,11 @@ class Planet:
         PLANET,
         (self.position[0] - PLANET_SIZE, self.position[1] - PLANET_SIZE))
 
+  def has_collided_with(self, ship):
+    distance = ((self.position[0] - ship.position[0])**2 +
+                (self.position[1] - ship.position[1])**2)**0.5
+    return distance < PLANET
+
 
 def main():
   pygame.init()
@@ -75,6 +80,11 @@ def main():
         if ship.position[0] >= 0 and ship.position[0] <= WIDTH
         and ship.position[1] >= 0 and ship.position[1] <= HEIGHT
     ]
+    # remove the ships that collided with the planet
+    spacecrafts = [
+        ship for ship in spacecrafts if not jupiter.has_collided_with(ship)
+    ]
+
     mouse_pos = pygame.mouse.get_pos()
     velocity_vector = mouse_pos
     for event in pygame.event.get():
