@@ -4,7 +4,7 @@ import pygame
 import math
 from pygame.locals import QUIT
 
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 1000, 800
 PLANET_MASS = 100
 SHIP_MASS = 5
 G = 5
