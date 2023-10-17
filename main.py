@@ -118,7 +118,8 @@ def main():
 
         if event.button == RIGHT_MOUSE:
           # remove the last spacecraft
-          spacecrafts.pop()
+          if len(spacecrafts):
+            spacecrafts.pop()
 
     # clear the screen
     win.blit(BG, (0, 0))
